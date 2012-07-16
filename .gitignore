@@ -1,0 +1,16 @@
+.idea/
+*.iws
+*.ipr
+*.iml
+*~
+*.log
+logs/
+target/
+out/
+.idea_modules/
+project/boot
+*.scala#
+*.java#
+.history
+.ensime
+
