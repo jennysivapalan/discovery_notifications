@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+        <title>Discovery week - notifications</title>
+        <style type="text/css">
+            body {
+                background-image: url(screenshot.png);
+                background-position: top center;
+                background-repeat: no-repeat;
+                margin: 0;
+                padding: 0;
+            }
+
+            #toolbar {
+                background-color: #EEE;
+                width: 1024px;
+                margin: 4px auto 0 auto;
+            }
+
+            #notifications {
+                position: relative;
+                overflow: visible;
+                margin-left: 952px;
+            }
+
+            #notification-count {
+                margin: 0;
+                background-color: #F00;
+                color: #FFF;
+                font-weight: bold;
+                height: 1.7em;
+                width: 1.7em;
+                line-height: 1.7em;
+                text-align: center;
+                font-size: 15px;
+                float: left;
+                font-family: arial, sans-serif;
+                border-radius: 3px;
+                border-width: 1px;
+                border-color: rgba(0,0,0,0.2);
+                cursor: pointer;
+            }
+
+            #notification-items {
+                display: none;
+                position: absolute;
+                top: 26px;
+                right: 42px;
+                background-color: #F2f2f2;
+                width: 450px;
+                font-family: arial, sans-serif;
+                font-size: 13px;
+                -webkit-box-shadow: 0px 9px 9px rgba(50, 50, 50, 0.90);
+                -moz-box-shadow: 0px 9px 9px rgba(50, 50, 50, 0.90);
+                box-shadow: 0px 9px 9px rgba(50, 50, 50, 0.90);
+                border-color: rgba(0,0,0,0.4);
+                border-width: 1px;
+                border-bottom-right-radius: 5px;
+                border-bottom-left-radius: 5px;
+
+                max-height: 400px;
+                overflow-y: scroll;
+            }
+
+            .notification-item {
+                position: relative;
+                padding: 7px 15px;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+            }
+
+            .notification-item:hover {
+                background-color: #fff;
+                cursor: pointer;
+            }
+
+           
+
+            .notification-item a {
+                text-decoration: none;
+                color: #000;
+            }
+
+            .notification-clear {
+                position: absolute;
+                top: 4px;
+                right: 5px;
+                border: 1px solid white;
+                background-color: rgba(0,0,0,0.1);
+                border-radius: 5px;
+                border-width: 1px;
+                border-color: rgba(0,0,0,0.2);
+                width: 1em;
+                height: 1em;
+                line-height: 0.8em;
+                display: inline-block;
+                text-align: center;
+            }
+
+            .notification-clear:hover {
+                background-color: rgba(0,0,0,0.8);
+                color: #fff;
+            }
+
+            .notification-title {
+                margin: 0;
+                font-size: 12px;
+            }
+
+            .notification-title strong {
+                color: #666;
+            }
+
+
+            .notification-snippet {
+                font-style: normal;
+                font-color: #666;
+                margin-top: 5px;
+                margin-bottom: 5px;
+            }
+
+            .notifications-clear-all {
+                font-weight: bold;
+                text-align: right;
+                padding: 7px 10px 3px 0;
+                cursor: pointer;
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+
+            .notifications-clear-all:hover {
+                text-decoration: underline;
+            }
+
+            .notification-profile-headshot {
+                float: left;
+                margin: 0 10px 5px 0;
+            }
+
+
+        </style>
+    </head>
+    <body>
+        <div id="toolbar">
+            <div id="notifications">
+                <div id="notification-count">3</div>
+
+                <div id="notification-items">
+                    <p class="notifications-clear-all">Clear all notifications</p>
+
+                    <!-- Nofitication item [START] -->
+                    <div class="notification-item" href="http://www.guardian.co.uk/sport/london-2012-olympics-blog/2012/jul/16/london-2012-olympic-11-days-to-go">
+
+                        <img class="notification-profile-headshot" src="blog_pic.jpg" width="60" heigh="60" />
+                        <h3 class="notification-title">
+                            <strong>Live blog</strong><br/>
+                            London 2012 Olympics: 11 days to go
+                        </h3>
+
+                        <p class="notification-snippet">
+                            <q class="notification-inline-quote">Members of the Australian Olympics team are the latest
+                            to be treated to a rather circuitous...</q> and 12 more updates.
+                        </p>
+
+                        <div class="notification-clear" title="Clear this update">
+                            x
+                        </div>
+                    </div>
+                    <!-- Nofitication item [END] -->
+
+                    <!-- Nofitication item [START] -->
+                    <div class="notification-item" href="http://www.guardian.co.uk/commentisfree/2012/jul/15/how-fix-british-summer">
+                        
+                        <img class="notification-profile-headshot" src="charlie_brooker.jpg" width="60" heigh="60" />
+                        <h3 class="notification-title">
+                            <strong>Charlie Brooker</strong><br/>
+                            How to fix the missing British summer – and other irritations
+                        </h3>
+
+                        
+
+                        <p class="notification-snippet">
+                            <q class="notification-inline-quote">We have to do something about the weather soon,
+                                before people ask why we are trying to hold the
+                                Olympics underwater.</q>
+                        </p>
+
+                        <div class="notification-clear" title="Clear this update">
+                            x
+                        </div>
+                    </div>
+                    <!-- Nofitication item [END] -->
+
+
+                     <!-- Nofitication item [START] -->
+                    <div class="notification-item" href="http://www.guardian.co.uk/commentisfree/2012/jul/08/andy-murray-not-miserable-just-normal">
+
+                        <img class="notification-profile-headshot" src="pencil.png" width="30" heigh="30" />
+                        
+                        <h3 class="notification-title">
+                            <strong>Comments</strong><br />
+                            Andy Murray: not miserable, just normal
+                        </h3>
+
+                    
+                        <p class="notification-snippet">Your comment <q>Good article. He'll be a great Brit
+                            if he wins &amp; a dour Scot if he doesn't.
+                            Oh the media...</q> has 3 replies.</p>
+
+                        <div class="notification-clear" title="Clear this update">
+                            x
+                        </div>
+                    </div>
+                    <!-- Nofitication item [END] -->
+
+
+                    <!-- Nofitication item [START] -->
+                    <div class="notification-item" href="http://www.guardian.co.uk/politics/blog/2012/jul/16/cameron-clegg-rail-investment-politics-live">
+
+                        <img class="notification-profile-headshot" src="blog_pic_2.jpg" width="60" heigh="60" />
+                        <h3 class="notification-title">
+                            <strong>Live blog</strong><br/>
+                            Cameron and Clegg announce £9bn rail investment: Politics live blog
+                        </h3>
+
+                        <p class="notification-snippet">
+                            <q class="notification-inline-quote">David Cameron has insisted that he is "even more
+                                committed to the coalition" than he was when it
+                                was crea...</q> and 10 more updates.</p>
+
+                        <div class="notification-clear" title="Clear this update">
+                            x
+                        </div>
+                    </div>
+                    <!-- Nofitication item [END] -->
+                    
+
+                    
+
+
+                </div>
+            </div>
+        </div>
+
+
+
+        <script type="text/javascript" src="jquery.min.js"></script>
+        <script type="text/javascript">
+            $('#notification-count').click(function() {
+                $('#notification-items').toggle();
+            })
+
+            $('.notification-clear').click(function(e) {
+                e.stopPropagation();
+                $('#notification-count').text(
+                    parseInt($('#notification-count').text(), 10) - 1
+                );
+
+                $(this).parent('.notification-item').slideUp(function() {
+                    $(this).remove();
+                });
+            });
+
+            $('.notification-item').click(function() {
+                window.location = $(this).attr('href');
+            });
+
+            $('.notifications-clear-all').click(function() {
+                $('#notification-items').hide();
+                $('.notification-item').remove();
+            });
+
+            $('#notification-count').text(
+                $('.notification-item').length
+            );
+        </script>
+    </body>
+</html>
