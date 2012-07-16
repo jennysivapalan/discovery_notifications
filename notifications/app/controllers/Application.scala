@@ -23,14 +23,13 @@ object Application extends Controller with DefaultWrites {
 
   def userUpdate(id:String) =  Action {
     request =>{
-      val path = request.queryString.get("path").get.head
-      val lastViewedId = request.queryString.get("lastViewedId").get.head
+      val path = request.body.asFormUrlEncoded.get("path").head
+      val lastViewedId = request.body.asFormUrlEncoded.get("lastViewedId").head
       println(path)
       println(lastViewedId)
       val blog = new Blog(path, lastViewedId)
-      val user = new User(id, List(blog))
-      DBConnection.save(user)
-      Ok("Got request [" + request.queryString + "]")
+      DBConnection.save(id, blog)
+      Ok("Got request [" + request.body.asFormUrlEncoded + "]")
     }
 
   }

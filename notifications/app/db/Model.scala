@@ -13,14 +13,27 @@ object DBConnection{
   object UserDAO extends SalatDAO[User, String](collection = mongoColl)
 
   def query(id: String): Option[User] = {
-    val q = MongoDBObject("id" -> id)
-    val user = mongoColl.findOne(q).map(grater[User].asObject(_))
-    print(user)
+    val user = UserDAO.findOneByID(id)
     user
   }
 
-  def save(user: User) {
-    val _id = UserDAO.insert(user)
+  def save(id: String, blogUpdate: Blog) {
+      UserDAO.findOneByID(id) match  {
+      case Some(user: User) =>{
+        user.subscribedBlogs.find(b => blogUpdate.id==b.id) match {
+          case Some(blog: Blog) => {
+            blog.lastViewedId = blogUpdate.lastViewedId
+          }
+          case None => {
+            user.subscribedBlogs = user.subscribedBlogs :+ blogUpdate
+          }
+        }
+        val cr = UserDAO.save(user)
+      }
+      case None => {
+        val _id = UserDAO.insert(new User(id, List(blogUpdate)))
+      }
+    }
   }
 
 
@@ -28,6 +41,6 @@ object DBConnection{
 }
 
 
-case class User(@Key("_id") id: String, subscribedBlogs: List[Blog])
-case class Blog(@Key("_id") id: String, lastViewedId: String)
+case class User(@Key("_id") id: String, var subscribedBlogs: List[Blog])
+case class Blog(@Key("_id") id: String, var lastViewedId: String)
 
