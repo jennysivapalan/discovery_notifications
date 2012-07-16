@@ -9,6 +9,7 @@ import play.api.libs.json.Writes._
 import com.codahale.jerkson.Json._
 
 
+
 object Application extends Controller with DefaultWrites {
   
   def index = Action {
@@ -18,6 +19,16 @@ object Application extends Controller with DefaultWrites {
   def userSubscriptions(id: String) = Action {
     val user: Option[User] = DBConnection.query(id)
 
+    user.map(u =>
+      {
+        val subscribedBlogs: List[Blog] = u.subscribedBlogs
+        subscribedBlogs.foreach( blog => {
+
+            blog.count = 8
+        })
+      })
+
+
     Ok(generate(user)).as("application/json")
   }
 
@@ -25,8 +36,6 @@ object Application extends Controller with DefaultWrites {
     request =>{
       val path = request.body.asFormUrlEncoded.get("path").head
       val lastViewedId = request.body.asFormUrlEncoded.get("lastViewedId").head
-      println(path)
-      println(lastViewedId)
       val blog = new Blog(path, lastViewedId)
       DBConnection.save(id, blog)
       Ok("Got request [" + request.body.asFormUrlEncoded + "]")

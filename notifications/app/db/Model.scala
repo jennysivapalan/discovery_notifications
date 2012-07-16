@@ -17,6 +17,8 @@ object DBConnection{
     user
   }
 
+
+
   def save(id: String, blogUpdate: Blog) {
       UserDAO.findOneByID(id) match  {
       case Some(user: User) =>{
@@ -42,5 +44,5 @@ object DBConnection{
 
 
 case class User(@Key("_id") id: String, var subscribedBlogs: List[Blog])
-case class Blog(@Key("_id") id: String, var lastViewedId: String)
+case class Blog(@Key("_id") id: String, var lastViewedId: String, @Ignore var count: Int = 0)
 
