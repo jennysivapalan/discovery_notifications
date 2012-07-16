@@ -51,6 +51,21 @@ object Application extends Controller with DefaultWrites {
 
   }
 
+  def userUpdatesMultipleNotifications(id: String) = Action {
+    request => {
+
+      var numberOfNotificationsToUpdate = request.body.asFormUrlEncoded.get("numberOfNotifications").head.toInt
+      for (i <- 1 to numberOfNotificationsToUpdate) {
+        val path = request.body.asFormUrlEncoded.get("path%s".format(i)).head
+        val lastViewedId = request.body.asFormUrlEncoded.get("lastViewedId%s".format(i)).head
+        val blog = new Blog(path, lastViewedId)
+        DBConnection.save(id, blog)
+      }
+      Ok("OK")
+    }
+
+  }
+
   def getLiveBlogCount(blog : Blog) : Int = {
     val url = "http://gnm41146.int.gnl:9081/api/preview/%s?%s".format(blog.id, blog.lastViewedId)
     println(url)
