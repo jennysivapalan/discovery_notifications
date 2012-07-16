@@ -17,19 +17,26 @@ object Application extends Controller with DefaultWrites {
   }
 
   def userSubscriptions(id: String) = Action {
-    val user: Option[User] = DBConnection.query(id)
+    request =>{
+      val callback = request.queryString.get("callback").map(_.head)
+      val user: Option[User] = DBConnection.query(id)
 
-    user.map(u =>
-      {
-        val subscribedBlogs: List[Blog] = u.subscribedBlogs
-        subscribedBlogs.foreach( blog => {
+      user.map(u =>
+        {
+          val subscribedBlogs: List[Blog] = u.subscribedBlogs
+          subscribedBlogs.foreach( blog => {
 
-            blog.count = 8
+              blog.count = 8
+          })
         })
-      })
 
 
-    Ok(generate(user)).as("application/json")
+      callback match {
+        case Some(func:String) => Ok(func+"("+generate(user)+")").as("application/json")
+        case _ => Ok(generate(user)).as("application/json")
+      }
+
+    }
   }
 
   def userUpdate(id:String) =  Action {
