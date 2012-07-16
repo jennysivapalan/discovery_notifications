@@ -7,6 +7,7 @@ import play.api.libs.json._
 import play.api.libs.json.Json._
 import play.api.libs.json.Writes._
 import com.codahale.jerkson.Json._
+import play.api.libs.ws.WS
 
 
 
@@ -25,8 +26,8 @@ object Application extends Controller with DefaultWrites {
         {
           val subscribedBlogs: List[Blog] = u.subscribedBlogs
           subscribedBlogs.foreach( blog => {
+            blog.count = getLiveBlogCount(blog)
 
-              blog.count = 8
           })
         })
 
@@ -48,6 +49,15 @@ object Application extends Controller with DefaultWrites {
       Ok("Got request [" + request.body.asFormUrlEncoded + "]")
     }
 
+  }
+
+  def getLiveBlogCount(blog : Blog) : Int = {
+    val url = "http://gnm41146.int.gnl:9081/api/preview/%s?%s".format(blog.id, blog.lastViewedId)
+    println(url)
+    val response = WS.url(url).get().value.get
+    val body = response.body
+    val count = (Json.parse(body)\\"content").size
+    count
   }
   
 }
