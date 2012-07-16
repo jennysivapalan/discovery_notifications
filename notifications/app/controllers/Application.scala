@@ -52,7 +52,7 @@ object Application extends Controller with DefaultWrites {
   }
 
   def getLiveBlogCount(blog : Blog) : Int = {
-    val url = "http://gnm41146.int.gnl:9081/api/preview/%s?%s".format(blog.id, blog.lastViewedId)
+    val url = "http://gnm41146.int.gnl:9081/api/preview/%s?offset=%s".format(blog.id, blog.lastViewedId)
     println(url)
     val response = WS.url(url).get().value.get
     val body = response.body
