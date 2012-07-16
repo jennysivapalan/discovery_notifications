@@ -9,11 +9,12 @@ object ApplicationBuild extends Build {
 
     val appDependencies = Seq(
       // Add your project dependencies here,
-      "runcom.mongodb.casbah" %% "casbah" % "2.1.5-1"
+      "com.mongodb.casbah" %% "casbah" % "2.1.5-1"
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
-      // Add your own project settings here      
+      resolvers ++= Seq(
+        "repo.novus snaps" at "http://repo.novus.com/snapshots/")
     )
 
 }
