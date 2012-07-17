@@ -70,7 +70,11 @@ object Application extends Controller with DefaultWrites {
       if (optionUser.isDefined) {
         val user = optionUser.get
         user.subscribedBlogs.foreach(blog => {
-          blog.lastViewedId = getLastLiveBlogId(blog.id)
+          blog.lastViewedId = try{
+            getLastLiveBlogId(blog.id)
+          } catch {
+            case _=> blog.lastViewedId
+          }
         })
         user.subscribedComments.foreach(comment => {
           comment.highlightUpdated = false
