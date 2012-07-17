@@ -1,6 +1,6 @@
 package controllers
 
-import db.{Blog, User, DBConnection}
+import _root_.db.{DBConnection, Blog, User}
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
@@ -17,6 +17,9 @@ object Application extends Controller with DefaultWrites {
     Ok(views.html.index("Your new application is ready."))
   }
 
+  /**
+   * GET
+   */
   def userSubscriptions(id: String) = Action {
     request =>{
       val callback = request.queryString.get("callback").map(_.head)
@@ -40,6 +43,9 @@ object Application extends Controller with DefaultWrites {
     }
   }
 
+  /**
+   * POST
+   */
   def userUpdate(id:String) =  Action {
     request =>{
       val path = request.body.asFormUrlEncoded.get("path").head
@@ -51,20 +57,27 @@ object Application extends Controller with DefaultWrites {
 
   }
 
-  def userUpdatesMultipleNotifications(id: String) = Action {
+  /**
+   * POST
+   */
+  def userUpdatesAllSubscriptions(id: String) = Action {
     request => {
 
-      var numberOfNotificationsToUpdate = request.body.asFormUrlEncoded.get("numberOfNotifications").head.toInt
-      for (i <- 1 to numberOfNotificationsToUpdate) {
-        val path = request.body.asFormUrlEncoded.get("path%s".format(i)).head
-        val lastViewedId = request.body.asFormUrlEncoded.get("lastViewedId%s".format(i)).head
-        val blog = new Blog(path, lastViewedId)
-        DBConnection.save(id, blog)
-      }
-      Ok("Saved")
-    }
+      val optionUser: Option[User] = DBConnection.query(id)
+      if (optionUser.isDefined) {
+        val user = optionUser.get
+        user.subscribedBlogs.foreach(blog => {
+          blog.lastViewedId = getLastLiveBlogId(blog.id)
+        })
 
+        DBConnection.save(user)
+      }
+
+    Ok("Updated")
+    }
   }
+
+
 
   def getLiveBlogCount(blog : Blog) : Int = {
     val url = "http://flxapi.gucode.gnl:8080/api/live/%s?offset=%s".format(blog.id, blog.lastViewedId)
@@ -73,6 +86,15 @@ object Application extends Controller with DefaultWrites {
     val body = response.body
     val count = (Json.parse(body)\"content"\"blocks").asInstanceOf[JsArray].value.size
     count
+  }
+
+
+  def getLastLiveBlogId(path: String) : String = {
+    val url = "http://flxapi.gucode.gnl:8080/api/live/%s".format(path)
+    val response = WS.url(url).get().value.get
+    val body = response.body
+    val lastLiveBlockId = (Json.parse(body) \ "content" \ "blocks" \\ "id").head
+    lastLiveBlockId.toString().replaceAll("\"", "")
   }
   
 }

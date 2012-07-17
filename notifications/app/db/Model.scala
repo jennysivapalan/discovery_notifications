@@ -38,6 +38,10 @@ object DBConnection{
     }
   }
 
+  def save(user : User) {
+    UserDAO.save(user)
+  }
+
 
 
 }
