@@ -61,17 +61,17 @@ object Application extends Controller with DefaultWrites {
         val blog = new Blog(path, lastViewedId)
         DBConnection.save(id, blog)
       }
-      Ok("OK")
+      Ok("Saved")
     }
 
   }
 
   def getLiveBlogCount(blog : Blog) : Int = {
-    val url = "http://gnm41146.int.gnl:9081/api/preview/%s?offset=%s".format(blog.id, blog.lastViewedId)
+    val url = "http://flxapi.gucode.gnl:8080/api/live/%s?offset=%s".format(blog.id, blog.lastViewedId)
     println(url)
     val response = WS.url(url).get().value.get
     val body = response.body
-    val count = (Json.parse(body)\"content"\"liveBlocks").asInstanceOf[JsArray].value.size
+    val count = (Json.parse(body)\"content"\"blocks").asInstanceOf[JsArray].value.size
     count
   }
   
