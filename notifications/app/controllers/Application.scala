@@ -50,7 +50,7 @@ object Application extends Controller with DefaultWrites {
   /**
    * POST
    */
-  def userUpdate(id:String) =  Action {
+  def userSubscribesToBlog(id:String) =  Action {
     request =>{
       val path = request.body.asFormUrlEncoded.get("path").head
       val lastViewedId = request.body.asFormUrlEncoded.get("lastViewedId").head

@@ -8,8 +8,8 @@ GET     /                           controllers.Application.index
 # Get User subscriptions
 GET     /user/:id                   controllers.Application.userSubscriptions(id: String)
 
-# Post User updates/follows
-POST    /user/:id                   controllers.Application.userUpdate(id: String)
+# Post User subscribes to blog
+POST    /user/:id/blog                   controllers.Application.userSubscribesToBlog(id: String)
 
 #Post User updates multiple subscriptions
 POST /user/:id/updateNotifications            controllers.Application.userUpdatesAllSubscriptions(id: String)
