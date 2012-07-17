@@ -4,14 +4,15 @@ import _root_.db.{DBConnection, Blog, User}
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
-import play.api.libs.json.Json._
-import play.api.libs.json.Writes._
 import com.codahale.jerkson.Json._
 import play.api.libs.ws.WS
+import play.api.Play.current
 
 
 
 object Application extends Controller with DefaultWrites {
+
+  val baseUrl = Play.configuration.getString("flexible.content.url").getOrElse("")
   
   def index = Action {
     Ok(views.html.index("Your new application is ready."))
@@ -80,7 +81,7 @@ object Application extends Controller with DefaultWrites {
 
 
   def getLiveBlogCount(blog : Blog) : Int = {
-    val url = "http://flxapi.gucode.gnl:8080/api/live/%s?offset=%s".format(blog.id, blog.lastViewedId)
+    val url = "%s%s?offset=%s".format(baseUrl, blog.id, blog.lastViewedId)
     println(url)
     val response = WS.url(url).get().value.get
     val body = response.body
@@ -90,7 +91,8 @@ object Application extends Controller with DefaultWrites {
 
 
   def getLastLiveBlogId(path: String) : String = {
-    val url = "http://flxapi.gucode.gnl:8080/api/live/%s".format(path)
+    val url = "%s%s".format(baseUrl, path)
+    println(url)
     val response = WS.url(url).get().value.get
     val body = response.body
     val lastLiveBlockId = (Json.parse(body) \ "content" \ "blocks" \\ "id").head
