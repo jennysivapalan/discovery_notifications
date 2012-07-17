@@ -11,6 +11,12 @@ GET     /user/:id                   controllers.Application.userSubscriptions(id
 # Post User subscribes to blog
 POST    /user/:id/blog                   controllers.Application.userSubscribesToBlog(id: String)
 
+# Clear a single comment notification
+POST    /user/:id/clearCommentNotification   controllers.Application.clearCommentNotification(id: String)
+
+# Create a new user with the specified id
+POST    /user/:id/create                   controllers.Application.createNewUser(id: String)
+
 #Post User updates multiple subscriptions
 POST /user/:id/updateNotifications            controllers.Application.userUpdatesAllSubscriptions(id: String)
 
