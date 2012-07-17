@@ -20,6 +20,12 @@ object DBConnection{
   }
 
 
+  def createNewUser(id: String) {
+    if (UserDAO.findOneByID(id).isEmpty){
+      val _id = UserDAO.insert(new User(id))
+    }
+  }
+
 
   def save(id: String, blogUpdate: Blog) {
       UserDAO.findOneByID(id) match  {

@@ -79,7 +79,7 @@ object Application extends Controller with DefaultWrites {
 
 
   /**
-   * POST
+   * POST (Clear all notifications)
    */
   def userUpdatesAllSubscriptions(id: String) = Action {
     request => {
@@ -107,7 +107,45 @@ object Application extends Controller with DefaultWrites {
     }
   }
 
+  /**
+   * POST
+   */
+  def createNewUser(userId: String) = Action{
+    DBConnection.createNewUser(userId)
+    Ok("Done.")
+  }
 
+  /**
+   * POST
+   */
+  def clearCommentNotification(userId: String) = Action {
+    request => {
+      val commentId = request.body.asFormUrlEncoded.get("commentId").head
+      val notificationType = request.body.asFormUrlEncoded.get("notificationType").head
+      println(userId)
+      println(commentId)
+      println(notificationType)
+      val optionUser: Option[User] = DBConnection.query(userId)
+      if (optionUser.isDefined) {
+        val user = optionUser.get
+        user.subscribedComments.find(c => c.id==commentId).foreach(c => {
+          if (notificationType.contains("highlight")) {
+            c.highlightUpdated=false
+          }else if (notificationType.contains("recommend"))
+            c.recommendCountUpdated=false
+          else if (notificationType.contains("reply"))
+            c.replyCountUpdated=false
+          else if (notificationType.contains("all")){
+            c.highlightUpdated=false
+            c.recommendCountUpdated=false
+            c.replyCountUpdated=false
+          }
+        })
+        DBConnection.save(user)
+      }
+    }
+    Ok("Updated")
+  }
 
   def getLiveBlogCount(blog : Blog) : Int = {
     val url = "%s%s?offset=%s".format(baseUrl, blog.id, blog.lastViewedId)
@@ -137,8 +175,8 @@ object Application extends Controller with DefaultWrites {
         val numResponses = c.\("numResponses").toString.toInt
         val numRecommends = c.\("numRecommends").toString.toInt
         val isHighlighted = c.\("isHighlighted").toString.toBoolean
-        val discussionUrl = c.\("discussion").\("url").toString
-        val discussionTitle = c.\("discussion").\("title").toString
+        val discussionUrl = c.\("discussion").\("url").toString.replace("\"","")
+        val discussionTitle = c.\("discussion").\("title").toString.replace("\"","")
 
         user.subscribedComments.find(_.id==commentId) match {
           case Some(commentInDB) => {
