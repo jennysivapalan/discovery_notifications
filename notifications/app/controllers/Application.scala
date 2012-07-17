@@ -72,6 +72,11 @@ object Application extends Controller with DefaultWrites {
         user.subscribedBlogs.foreach(blog => {
           blog.lastViewedId = getLastLiveBlogId(blog.id)
         })
+        user.subscribedComments.foreach(comment => {
+          comment.highlightUpdated = false
+          comment.recommendCountUpdated = false
+          comment.replyCountUpdated = false
+        })
 
         DBConnection.save(user)
       }
@@ -97,12 +102,12 @@ object Application extends Controller with DefaultWrites {
   }
 
   def getCommentUpdates(user: User) {
-    val url = "http://discussionapi.gucode.co.uk/discussion-api/profile/%s/comments".format("3853811")
+    val url = "http://discussionapi.gucode.co.uk/discussion-api/profile/%s/comments".format(user.id)
     println(url)
     val response = WS.url(url).get().value.get
     val body = response.body
     val commentJson = (Json.parse(body)\"comments")
-    val user = new User("3853811")
+    var changed = false
 
     if(commentJson.isInstanceOf[JsArray]){
       commentJson.asInstanceOf[JsArray].value.foreach(c=>{
@@ -110,29 +115,38 @@ object Application extends Controller with DefaultWrites {
         val numResponses = c.\("numResponses").toString.toInt
         val numRecommends = c.\("numRecommends").toString.toInt
         val isHighlighted = c.\("isHighlighted").toString.toBoolean
+        val discussionUrl = c.\("discussion").\("url").toString
+        val discussionTitle = c.\("discussion").\("title").toString
 
-        user.comments.find(_.id==commentId) match {
+        user.subscribedComments.find(_.id==commentId) match {
           case Some(commentInDB) => {
-            if (commentInDB.lastViewedResponseCount != numResponses)
+            if (commentInDB.responseCount != numResponses)
               commentInDB.replyCountUpdated = true//numResponses - commentInDB.lastViewedResponseCount
-              //commentInDB.lastViewedResponseCount = numResponses
+              commentInDB.responseCount = numResponses
+              changed = true
 
-            if (commentInDB.lastViewedRecommendCount != numRecommends)
+            if (commentInDB.recommendCount != numRecommends)
               commentInDB.recommendCountUpdated = true//numRecommends - commentInDB.lastViewedRecommendCount
-              //commentInDB.lastViewedRecommendCount = numRecommends
+              commentInDB.recommendCount = numRecommends
+            changed = true
 
             if (commentInDB.isHighlighted != isHighlighted)
               commentInDB.highlightUpdated = true
-              //commentInDB.isHighlighted = isHighlighted
+              commentInDB.isHighlighted = isHighlighted
+            changed = true
 
           }
           case None => {
-            val newComment = Comment(commentId, numResponses, numRecommends, isHighlighted, numResponses!=0, numRecommends!=0, isHighlighted)
-            user.comments = user.comments :+ newComment
+            val newComment = Comment(commentId, discussionTitle, discussionUrl, numResponses, numRecommends,
+              isHighlighted, numResponses!=0, numRecommends!=0, isHighlighted)
+            user.subscribedComments = user.subscribedComments :+ newComment
+            changed = true
           }
         }
       })
     }
+    if (changed)
+      DBConnection.save(user)
   }
 
 
