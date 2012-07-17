@@ -1,14 +1,17 @@
 package controllers
 
 
-import db.{Comment, DBConnection, Blog, User}
+import db.{Comment, DBConnection, Blog, User, Tag}
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
 import com.codahale.jerkson.Json._
 import play.api.libs.ws.WS
 import play.api.Play.current
-
+import java.util.Date
+import org.joda.time.format.{ISODateTimeFormat, DateTimeFormat}
+import java.util
+import org.joda.time.DateTime
 
 
 object Application extends Controller with DefaultWrites {
@@ -58,6 +61,20 @@ object Application extends Controller with DefaultWrites {
       DBConnection.save(id, blog)
       Ok("Got request [" + request.body.asFormUrlEncoded + "]")
     }
+  }
+
+  /**
+   * POST
+   */
+  def userSubscribesToTag(id:String) = Action {
+    request => {
+      val tagId = request.body.asFormUrlEncoded.get("tag").head
+      val tag = new Tag(tagId,ISODateTimeFormat.dateTime().print(new DateTime()))
+      println(tag)
+      DBConnection.save(id, tag)
+      Ok("Got request [" + request.body.asFormUrlEncoded + "]")
+    }
+
   }
 
 

@@ -11,6 +11,9 @@ GET     /user/:id                   controllers.Application.userSubscriptions(id
 # Post User subscribes to blog
 POST    /user/:id/blog                   controllers.Application.userSubscribesToBlog(id: String)
 
+# Post User follows a tag
+POST /user/:id/tag                  controllers.Application.userSubscribesToTag(id: String)
+
 #Post User updates multiple subscriptions
 POST /user/:id/updateNotifications            controllers.Application.userUpdatesAllSubscriptions(id: String)
 

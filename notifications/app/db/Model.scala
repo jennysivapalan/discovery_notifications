@@ -4,6 +4,8 @@ import com.novus.salat._
 import com.novus.salat.global._
 import com.novus.salat.annotations._
 import com.novus.salat.dao._
+import org.joda.time.DateTime
+import java.util.Date
 
 
 object DBConnection{
@@ -38,6 +40,27 @@ object DBConnection{
     }
   }
 
+  def save(id: String, tagUpdate: Tag) {
+    UserDAO.findOneByID(id) match {
+      case Some(user: User) => {
+        user.subscribedTags.find(t => tagUpdate.id==t.id) match {
+          case Some(tag: Tag) => {
+            tag.timeLastViewed = tagUpdate.timeLastViewed
+          }
+          case None => {
+            user.subscribedTags = user.subscribedTags :+ tagUpdate
+          }
+        }
+        UserDAO.save(user)
+      }
+      case None => {
+        UserDAO.insert(new User(id, Nil, Nil, List(tagUpdate)))
+      }
+
+
+    }
+  }
+
   def save(user : User) {
     UserDAO.save(user)
   }
@@ -47,8 +70,9 @@ object DBConnection{
 }
 
 
-case class User(@Key("_id") id: String, var subscribedBlogs: List[Blog]=List(), var subscribedComments: List[Comment]=List())
+case class User(@Key("_id") id: String, var subscribedBlogs: List[Blog]=List(), var subscribedComments: List[Comment]=List(), var subscribedTags: List[Tag]=List())
 case class Blog(@Key("_id") id: String, var lastViewedId: String, @Ignore var count: Int = 0)
+case class Tag(@Key("_id") id: String, var timeLastViewed: String)
 case class Comment(@Key("_id") id: String,
                    discussionTitle: String,
                    discussionUrl: String,
