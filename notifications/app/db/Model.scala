@@ -47,6 +47,15 @@ object DBConnection{
 }
 
 
-case class User(@Key("_id") id: String, var subscribedBlogs: List[Blog])
+case class User(@Key("_id") id: String, var subscribedBlogs: List[Blog]=List(), var subscribedComments: List[Comment]=List())
 case class Blog(@Key("_id") id: String, var lastViewedId: String, @Ignore var count: Int = 0)
+case class Comment(@Key("_id") id: String,
+                   discussionTitle: String,
+                   discussionUrl: String,
+                   var responseCount: Int,
+                   var recommendCount: Int,
+                   var isHighlighted: Boolean,
+                   var replyCountUpdated: Boolean,
+                   var recommendCountUpdated: Boolean,
+                   var highlightUpdated: Boolean)
 

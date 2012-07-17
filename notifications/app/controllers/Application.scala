@@ -1,6 +1,7 @@
 package controllers
 
-import _root_.db.{DBConnection, Blog, User}
+
+import db.{Comment, DBConnection, Blog, User}
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
@@ -18,6 +19,7 @@ object Application extends Controller with DefaultWrites {
     Ok(views.html.index("Your new application is ready."))
   }
 
+
   /**
    * GET
    */
@@ -31,8 +33,8 @@ object Application extends Controller with DefaultWrites {
           val subscribedBlogs: List[Blog] = u.subscribedBlogs
           subscribedBlogs.foreach( blog => {
             blog.count = getLiveBlogCount(blog)
-
           })
+          getCommentUpdates(u)
         })
 
 
@@ -43,6 +45,7 @@ object Application extends Controller with DefaultWrites {
 
     }
   }
+
 
   /**
    * POST
@@ -55,8 +58,8 @@ object Application extends Controller with DefaultWrites {
       DBConnection.save(id, blog)
       Ok("Got request [" + request.body.asFormUrlEncoded + "]")
     }
-
   }
+
 
   /**
    * POST
@@ -69,6 +72,11 @@ object Application extends Controller with DefaultWrites {
         val user = optionUser.get
         user.subscribedBlogs.foreach(blog => {
           blog.lastViewedId = getLastLiveBlogId(blog.id)
+        })
+        user.subscribedComments.foreach(comment => {
+          comment.highlightUpdated = false
+          comment.recommendCountUpdated = false
+          comment.replyCountUpdated = false
         })
 
         DBConnection.save(user)
@@ -84,9 +92,62 @@ object Application extends Controller with DefaultWrites {
     val url = "%s%s?offset=%s".format(baseUrl, blog.id, blog.lastViewedId)
     println(url)
     val response = WS.url(url).get().value.get
+    if (response.status==200){
+      val body = response.body
+      val blocks = (Json.parse(body)\"content"\"blocks")
+      if(blocks.isInstanceOf[JsArray])
+        blocks.asInstanceOf[JsArray].value.size
+      else
+        0
+    }else 0
+  }
+
+  def getCommentUpdates(user: User) {
+    val url = "http://discussionapi.gucode.co.uk/discussion-api/profile/%s/comments".format(user.id)
+    println(url)
+    val response = WS.url(url).get().value.get
     val body = response.body
-    val count = (Json.parse(body)\"content"\"blocks").asInstanceOf[JsArray].value.size
-    count
+    val commentJson = (Json.parse(body)\"comments")
+    var changed = false
+
+    if(commentJson.isInstanceOf[JsArray]){
+      commentJson.asInstanceOf[JsArray].value.foreach(c=>{
+        val commentId = c.\("id").toString
+        val numResponses = c.\("numResponses").toString.toInt
+        val numRecommends = c.\("numRecommends").toString.toInt
+        val isHighlighted = c.\("isHighlighted").toString.toBoolean
+        val discussionUrl = c.\("discussion").\("url").toString
+        val discussionTitle = c.\("discussion").\("title").toString
+
+        user.subscribedComments.find(_.id==commentId) match {
+          case Some(commentInDB) => {
+            if (commentInDB.responseCount != numResponses)
+              commentInDB.replyCountUpdated = true//numResponses - commentInDB.lastViewedResponseCount
+              commentInDB.responseCount = numResponses
+              changed = true
+
+            if (commentInDB.recommendCount != numRecommends)
+              commentInDB.recommendCountUpdated = true//numRecommends - commentInDB.lastViewedRecommendCount
+              commentInDB.recommendCount = numRecommends
+            changed = true
+
+            if (commentInDB.isHighlighted != isHighlighted)
+              commentInDB.highlightUpdated = true
+              commentInDB.isHighlighted = isHighlighted
+            changed = true
+
+          }
+          case None => {
+            val newComment = Comment(commentId, discussionTitle, discussionUrl, numResponses, numRecommends,
+              isHighlighted, numResponses!=0, numRecommends!=0, isHighlighted)
+            user.subscribedComments = user.subscribedComments :+ newComment
+            changed = true
+          }
+        }
+      })
+    }
+    if (changed)
+      DBConnection.save(user)
   }
 
 
