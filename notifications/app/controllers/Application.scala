@@ -16,7 +16,7 @@ import org.joda.time.{DateTimeZone, DateTime}
 
 object Application extends Controller with DefaultWrites {
 
-  val baseUrl = Play.configuration.getString("flexible.content.url").getOrElse("")
+  val flexibleContentUrl = Play.configuration.getString("flexible.content.url").getOrElse("")
 
   val timeRightNow = ISODateTimeFormat.dateTime().print(new DateTime(DateTimeZone.UTC))
   
@@ -206,8 +206,8 @@ object Application extends Controller with DefaultWrites {
 
 
   def getLiveBlogCount(blog : Blog) : Int = {
-    val url = "%s%s?offset=%s".format(baseUrl, blog.id, blog.lastViewedId)
-    println(url)
+    val url = "%s%s?offset=%s".format(flexibleContentUrl, blog.id, blog.lastViewedId)
+    println("Flexible content url:- " + url)
     val response = WS.url(url).get().value.get
     if (response.status==200){
       val body = response.body
@@ -236,6 +236,9 @@ object Application extends Controller with DefaultWrites {
         var tagJson = (Json.parse(body)\"response"\"tag")
         var byLineImageUrl = tagJson.\("bylineImageUrl").toString().replaceAll(("\""), "")
         tag.byLineImageUrl = byLineImageUrl
+
+        var contributor = tagJson.\("webTitle").toString().replaceAll(("\""), "")
+        tag.contributor = contributor
 
 
         val resultsJson = (Json.parse(body)\"response"\"results")
@@ -313,7 +316,7 @@ object Application extends Controller with DefaultWrites {
 
 
   def getLastLiveBlogId(path: String) : String = {
-    val url = "%s%s".format(baseUrl, path)
+    val url = "%s%s".format(flexibleContentUrl, path)
     println(url)
     val response = WS.url(url).get().value.get
     val body = response.body
