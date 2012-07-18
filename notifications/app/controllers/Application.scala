@@ -101,6 +101,9 @@ object Application extends Controller with DefaultWrites {
           comment.recommendCountUpdated = false
           comment.replyCountUpdated = false
         })
+        user.subscribedTags.foreach(
+          _.timeLastViewed = ISODateTimeFormat.dateTime().print(new DateTime(DateTimeZone.UTC))
+        )
 
         DBConnection.save(user)
       }
