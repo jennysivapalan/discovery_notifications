@@ -26,6 +26,12 @@ POST    /user/:id/create                   controllers.Application.createNewUser
 #Post User updates multiple subscriptions
 POST /user/:id/updateNotifications            controllers.Application.userUpdatesAllSubscriptions(id: String)
 
+#Post User unsubscribe from blog
+POST /user/:id/unsubscribeFromBlog            controllers.Application.unsubscribeFromBlog(id: String)
+
+#Post User unsubscribe from tag
+POST /user/:id/unsubscribeFromTag              controllers.Application.unsubscribeFromTag(id: String)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 

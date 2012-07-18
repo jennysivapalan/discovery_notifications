@@ -107,6 +107,35 @@ object Application extends Controller with DefaultWrites {
     }
   }
 
+
+  def unsubscribeFromBlog(id: String) = Action {
+    request => {
+      val optionUser: Option[User] = DBConnection.query(id)
+      if (optionUser.isDefined) {
+        val user = optionUser.get
+        val blogId = request.body.asFormUrlEncoded.get("blog").head
+        println(blogId)
+        user.subscribedBlogs = user.subscribedBlogs.filterNot(b=>{b.id==blogId})
+        DBConnection.save(user)
+      }
+    }
+    Ok("ok")
+  }
+
+  def unsubscribeFromTag(id: String) = Action {
+    request => {
+      val optionUser: Option[User] = DBConnection.query(id)
+      if (optionUser.isDefined) {
+        val user = optionUser.get
+        val tagId = request.body.asFormUrlEncoded.get("tag").head
+        println(tagId)
+        user.subscribedTags = user.subscribedTags.filterNot(t=>{t.id==tagId})
+        DBConnection.save(user)
+      }
+    }
+    Ok("ok")
+  }
+
   /**
    * POST
    */
