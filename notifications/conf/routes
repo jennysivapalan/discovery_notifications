@@ -19,6 +19,10 @@ POST /user/:id/tag                  controllers.Application.userSubscribesToTag(
 # Clear a single comment notification
 POST    /user/:id/clearCommentNotification   controllers.Application.clearCommentNotification(id: String)
 
+# Clear a single tag notification
+POST    /user/:id/clearTagNotification   controllers.Application.clearTagNotification(id: String)
+
+
 # Create a new user with the specified id
 POST    /user/:id/create                   controllers.Application.createNewUser(id: String)
 

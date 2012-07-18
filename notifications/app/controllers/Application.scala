@@ -17,6 +17,8 @@ import org.joda.time.{DateTimeZone, DateTime}
 object Application extends Controller with DefaultWrites {
 
   val baseUrl = Play.configuration.getString("flexible.content.url").getOrElse("")
+
+  val timeRightNow = ISODateTimeFormat.dateTime().print(new DateTime(DateTimeZone.UTC))
   
   def index = Action {
     Ok(views.html.index("Your new application is ready."))
@@ -102,7 +104,7 @@ object Application extends Controller with DefaultWrites {
           comment.replyCountUpdated = false
         })
         user.subscribedTags.foreach(
-          _.timeLastViewed = ISODateTimeFormat.dateTime().print(new DateTime(DateTimeZone.UTC))
+          _.timeLastViewed = timeRightNow
         )
 
         DBConnection.save(user)
@@ -180,6 +182,28 @@ object Application extends Controller with DefaultWrites {
     }
     Ok("Updated")
   }
+
+  /**
+   * POST
+   */
+  def clearTagNotification(userId: String) = Action {
+    request => {
+      val tagId = request.body.asFormUrlEncoded.get("tag").head
+      println(tagId)
+      val optionUser: Option[User] = DBConnection.query(userId)
+      if (optionUser.isDefined) {
+        val user = optionUser.get
+        val tagsFound = user.subscribedTags.filter(t => t.id == tagId)
+        tagsFound.foreach(t=> {
+          t.timeLastViewed = timeRightNow
+        })
+
+        DBConnection.save(user)
+      }
+    }
+    Ok("Updated")
+  }
+
 
   def getLiveBlogCount(blog : Blog) : Int = {
     val url = "%s%s?offset=%s".format(baseUrl, blog.id, blog.lastViewedId)
