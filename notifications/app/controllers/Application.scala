@@ -17,6 +17,8 @@ import org.joda.time.{DateTimeZone, DateTime}
 object Application extends Controller with DefaultWrites {
 
   val flexibleContentUrl = Play.configuration.getString("flexible.content.url").getOrElse("")
+  val contentApiUrlLive = "http://content.guardianapis.com/"
+  val contentApiUrlCode = "http://slrmst.gucode.gnl:8700/content-api/api/"
 
   val timeRightNow = ISODateTimeFormat.dateTime().print(new DateTime(DateTimeZone.UTC))
   
@@ -60,7 +62,15 @@ object Application extends Controller with DefaultWrites {
     request =>{
       val path = request.body.asFormUrlEncoded.get("path").head
       val lastViewedId = request.body.asFormUrlEncoded.get("lastViewedId").head
-      val blog = new Blog(path, lastViewedId)
+      val url = contentApiUrlCode + path +  "?format=json&show-fields=trail-text"
+      println("Code url:- " + url)
+      val response = WS.url(url).get().value.get
+      var body = response.body
+      var title = (Json.parse(body)\"response"\"content"\"webTitle").toString().replaceAll("\"", "")
+      var trailText = (Json.parse(body)\"response"\"content"\"fields"\"trailText").toString().replaceAll("\"", "")
+
+      println(trailText)
+      val blog = new Blog(path, lastViewedId, title, trailText)
       DBConnection.save(id, blog)
       Ok("Got request [" + request.body.asFormUrlEncoded + "]")
     }
@@ -221,14 +231,13 @@ object Application extends Controller with DefaultWrites {
 
   def getTagUpdates(user:User) {
 
-    val baseUrl = "http://content.guardianapis.com/"
     val basicQueryParams = "?format=json&show-fields=headline,standfirst,thumbnail&order-by=newest"
 
     user.subscribedTags.foreach({
       tag=>
         val lastViewedTime = tag.timeLastViewed
         val id= tag.id
-        val url = "%s%s%s&from-date=%s".format(baseUrl, id, basicQueryParams, lastViewedTime)
+        val url = "%s%s%s&from-date=%s".format(contentApiUrlLive, id, basicQueryParams, lastViewedTime)
         println(url)
         val response = WS.url(url).get().value.get
         val body = response.body

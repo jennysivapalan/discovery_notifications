@@ -33,6 +33,8 @@ object DBConnection{
         user.subscribedBlogs.find(b => blogUpdate.id==b.id) match {
           case Some(blog: Blog) => {
             blog.lastViewedId = blogUpdate.lastViewedId
+            blog.title = blogUpdate.title
+            blog.trailText = blogUpdate.trailText
           }
           case None => {
             user.subscribedBlogs = user.subscribedBlogs :+ blogUpdate
@@ -77,7 +79,7 @@ object DBConnection{
 
 
 case class User(@Key("_id") id: String, var subscribedBlogs: List[Blog]=List(), var subscribedComments: List[Comment]=List(), var subscribedTags: List[Tag]=List())
-case class Blog(@Key("_id") id: String, var lastViewedId: String, @Ignore var count: Int = 0)
+case class Blog(@Key("_id") id: String, var lastViewedId: String, var title: String, var trailText: String, @Ignore var count: Int = 0)
 case class Tag(@Key("_id") id: String, var timeLastViewed: String, @Ignore var byLineImageUrl:String ="", @Ignore var contributor:String="", @Ignore var count: Int = 0, @Ignore var content: List[Content] = List())
 case class Content(path:String ="", webTitle: String = "", webUrl:String = "", headline:String="", standfirst:String="", thumbnail:String="")
 case class Comment(@Key("_id") id: String,
