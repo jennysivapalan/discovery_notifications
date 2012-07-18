@@ -23,7 +23,7 @@ object Application extends Controller with DefaultWrites {
   val timeRightNow = ISODateTimeFormat.dateTime().print(new DateTime(DateTimeZone.UTC))
   
   def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index("Your new application is ready.")).withHeaders("Access-Control-Allow-Origin" -> "*")
   }
 
 
@@ -47,8 +47,8 @@ object Application extends Controller with DefaultWrites {
 
 
       callback match {
-        case Some(func:String) => Ok(func+"("+generate(user)+")").as("application/json")
-        case _ => Ok(generate(user)).as("application/json")
+        case Some(func:String) => Ok(func+"("+generate(user)+")").as("application/json").withHeaders("Access-Control-Allow-Origin" -> "*")
+        case _ => Ok(generate(user)).as("application/json").withHeaders("Access-Control-Allow-Origin" -> "*")
       }
 
     }
@@ -62,17 +62,20 @@ object Application extends Controller with DefaultWrites {
     request =>{
       val path = request.body.asFormUrlEncoded.get("path").head
       val lastViewedId = request.body.asFormUrlEncoded.get("lastViewedId").head
-      val url = contentApiUrlCode + path +  "?format=json&show-fields=trail-text"
+      val url = contentApiUrlCode + path +  "?format=json&show-fields=trail-text,thumbnail"
       println("Code url:- " + url)
       val response = WS.url(url).get().value.get
       var body = response.body
       var title = (Json.parse(body)\"response"\"content"\"webTitle").toString().replaceAll("\"", "")
       var trailText = (Json.parse(body)\"response"\"content"\"fields"\"trailText").toString().replaceAll("\"", "")
+      var thumbnail = (Json.parse(body)\"response"\"content"\"fields"\"thumbnail").toString().replaceAll("\"", "")
 
-      println(trailText)
-      val blog = new Blog(path, lastViewedId, title, trailText)
+      //as using code we need to replace the thumbnail host
+      thumbnail = thumbnail.replace("guim", "guimcode")
+
+      val blog = new Blog(path, lastViewedId, title, trailText, thumbnail)
       DBConnection.save(id, blog)
-      Ok("Got request [" + request.body.asFormUrlEncoded + "]")
+      Ok("Got request [" + request.body.asFormUrlEncoded + "]").withHeaders("Access-Control-Allow-Origin" -> "*")
     }
   }
 
@@ -86,7 +89,7 @@ object Application extends Controller with DefaultWrites {
       //val tag = new Tag(tagId,ISODateTimeFormat.dateTime().print(new DateTime(DateTimeZone.UTC)))
       println(tag)
       DBConnection.save(id, tag)
-      Ok("Got request [" + request.body.asFormUrlEncoded + "]")
+      Ok("Got request [" + request.body.asFormUrlEncoded + "]").withHeaders("Access-Control-Allow-Origin" -> "*")
     }
 
   }
@@ -120,7 +123,7 @@ object Application extends Controller with DefaultWrites {
         DBConnection.save(user)
       }
 
-    Ok("Updated")
+    Ok("Updated").withHeaders("Access-Control-Allow-Origin" -> "*")
     }
   }
 
@@ -136,7 +139,7 @@ object Application extends Controller with DefaultWrites {
         DBConnection.save(user)
       }
     }
-    Ok("ok")
+    Ok("ok").withHeaders("Access-Control-Allow-Origin" -> "*")
   }
 
   def unsubscribeFromTag(id: String) = Action {
@@ -150,7 +153,7 @@ object Application extends Controller with DefaultWrites {
         DBConnection.save(user)
       }
     }
-    Ok("ok")
+    Ok("ok").withHeaders("Access-Control-Allow-Origin" -> "*")
   }
 
   /**
@@ -158,7 +161,7 @@ object Application extends Controller with DefaultWrites {
    */
   def createNewUser(userId: String) = Action{
     DBConnection.createNewUser(userId)
-    Ok("Done.")
+    Ok("Done.").withHeaders("Access-Control-Allow-Origin" -> "*")
   }
 
   /**
@@ -190,7 +193,7 @@ object Application extends Controller with DefaultWrites {
         DBConnection.save(user)
       }
     }
-    Ok("Updated")
+    Ok("Updated").withHeaders("Access-Control-Allow-Origin" -> "*")
   }
 
   /**
@@ -211,7 +214,7 @@ object Application extends Controller with DefaultWrites {
         DBConnection.save(user)
       }
     }
-    Ok("Updated")
+    Ok("Updated").withHeaders("Access-Control-Allow-Origin" -> "*")
   }
 
 
