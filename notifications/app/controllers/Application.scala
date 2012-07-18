@@ -1,7 +1,7 @@
 package controllers
 
 
-import db.{Comment, DBConnection, Blog, User, Tag}
+import db.{Comment, DBConnection, Blog, User, Tag, Content}
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
@@ -11,7 +11,7 @@ import play.api.Play.current
 import java.util.Date
 import org.joda.time.format.{ISODateTimeFormat, DateTimeFormat}
 import java.util
-import org.joda.time.DateTime
+import org.joda.time.{DateTimeZone, DateTime}
 
 
 object Application extends Controller with DefaultWrites {
@@ -38,6 +38,7 @@ object Application extends Controller with DefaultWrites {
             blog.count = getLiveBlogCount(blog)
           })
           getCommentUpdates(u)
+          getTagUpdates(u)
         })
 
 
@@ -68,8 +69,9 @@ object Application extends Controller with DefaultWrites {
    */
   def userSubscribesToTag(id:String) = Action {
     request => {
-      val tagId = request.body.asFormUrlEncoded.get("tag").head
-      val tag = new Tag(tagId,ISODateTimeFormat.dateTime().print(new DateTime()))
+         val tagId = request.body.asFormUrlEncoded.get("tag").head
+      val tag = new Tag(tagId,ISODateTimeFormat.dateTime().print(new DateTime(2012, 7, 14,1,4, DateTimeZone.UTC)))
+      //val tag = new Tag(tagId,ISODateTimeFormat.dateTime().print(new DateTime(DateTimeZone.UTC)))
       println(tag)
       DBConnection.save(id, tag)
       Ok("Got request [" + request.body.asFormUrlEncoded + "]")
@@ -159,6 +161,45 @@ object Application extends Controller with DefaultWrites {
       else
         0
     }else 0
+  }
+
+  def getTagUpdates(user:User) {
+
+    val baseUrl = "http://content.guardianapis.com/search?format=json&show-fields=headline,standfirst"
+
+    user.subscribedTags.foreach({
+      tag=>
+        val lastViewedTime = tag.timeLastViewed
+        val id= tag.id
+        val url = "%s&from-date=%s&tag=%s".format(baseUrl, lastViewedTime, id)
+        println(url)
+        val response = WS.url(url).get().value.get
+        val body = response.body
+
+
+        val resultsJson = (Json.parse(body)\"response"\"results")
+
+        if(resultsJson.isInstanceOf[JsArray]){
+          resultsJson.asInstanceOf[JsArray].value.foreach(r => {
+            val path = r.\("id").toString()
+            val webTitle = r.\("webTitle").toString()
+            val webUrl = r.\("webUrl").toString()
+            val headline = (r.\("fields")\("headline")).toString()
+
+            val standfirst = (r.\("fields")\("standfirst")).toString()
+
+
+            tag.content = tag.content :+ new Content(path, webTitle, webUrl, headline, standfirst)
+          })
+        }
+
+        tag.count = tag.content.size
+
+
+
+    })
+
+
   }
 
   def getCommentUpdates(user: User) {

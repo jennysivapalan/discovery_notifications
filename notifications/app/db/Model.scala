@@ -78,7 +78,8 @@ object DBConnection{
 
 case class User(@Key("_id") id: String, var subscribedBlogs: List[Blog]=List(), var subscribedComments: List[Comment]=List(), var subscribedTags: List[Tag]=List())
 case class Blog(@Key("_id") id: String, var lastViewedId: String, @Ignore var count: Int = 0)
-case class Tag(@Key("_id") id: String, var timeLastViewed: String)
+case class Tag(@Key("_id") id: String, var timeLastViewed: String, @Ignore var count: Int = 0, @Ignore var content: List[Content] = List())
+case class Content(path:String ="", webTitle: String = "", webUrl:String = "", headline:String="", standfirst:String="")
 case class Comment(@Key("_id") id: String,
                    discussionTitle: String,
                    discussionUrl: String,
