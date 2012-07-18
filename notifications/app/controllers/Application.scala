@@ -165,31 +165,36 @@ object Application extends Controller with DefaultWrites {
 
   def getTagUpdates(user:User) {
 
-    val baseUrl = "http://content.guardianapis.com/search?format=json&show-fields=headline,standfirst"
+    val baseUrl = "http://content.guardianapis.com/"
+    val basicQueryParams = "?format=json&show-fields=headline,standfirst,thumbnail&order-by=newest"
 
     user.subscribedTags.foreach({
       tag=>
         val lastViewedTime = tag.timeLastViewed
         val id= tag.id
-        val url = "%s&from-date=%s&tag=%s".format(baseUrl, lastViewedTime, id)
+        val url = "%s%s%s&from-date=%s".format(baseUrl, id, basicQueryParams, lastViewedTime)
         println(url)
         val response = WS.url(url).get().value.get
         val body = response.body
+
+        var tagJson = (Json.parse(body)\"response"\"tag")
+        var byLineImageUrl = tagJson.\("bylineImageUrl").toString().replaceAll(("\""), "")
+        tag.byLineImageUrl = byLineImageUrl
 
 
         val resultsJson = (Json.parse(body)\"response"\"results")
 
         if(resultsJson.isInstanceOf[JsArray]){
           resultsJson.asInstanceOf[JsArray].value.foreach(r => {
-            val path = r.\("id").toString()
-            val webTitle = r.\("webTitle").toString()
-            val webUrl = r.\("webUrl").toString()
-            val headline = (r.\("fields")\("headline")).toString()
+            val path = r.\("id").toString().replace("\"","")
+            val webTitle = r.\("webTitle").toString().replace("\"","")
+            val webUrl = r.\("webUrl").toString().replace("\"","")
+            val headline = (r.\("fields")\("headline")).toString().replace("\"","")
+            val standfirst = (r.\("fields")\("standfirst")).toString().replace("\"","")
+            val thumbnail = (r.\("fields")\("thumbnail")).toString().replace("\"","")
 
-            val standfirst = (r.\("fields")\("standfirst")).toString()
 
-
-            tag.content = tag.content :+ new Content(path, webTitle, webUrl, headline, standfirst)
+            tag.content = tag.content :+ new Content(path, webTitle, webUrl, headline, standfirst, thumbnail)
           })
         }
 
