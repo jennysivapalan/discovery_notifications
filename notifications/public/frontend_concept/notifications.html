@@ -21,7 +21,14 @@
             #notifications {
                 position: relative;
                 overflow: visible;
-                margin-left: 952px;
+                margin-left: 897px;
+            }
+
+            #notification-toolbar {
+                float: left;
+                font-family: arial, sans-serif;
+                font-size: 13px;
+                background-color: #EEE;
             }
 
             #notification-count {
@@ -34,18 +41,18 @@
                 line-height: 1.7em;
                 text-align: center;
                 font-size: 15px;
-                float: left;
                 font-family: arial, sans-serif;
                 border-radius: 3px;
                 border-width: 1px;
                 border-color: rgba(0,0,0,0.2);
                 cursor: pointer;
+                display: inline-block;
             }
 
             #notification-items {
                 display: none;
                 position: absolute;
-                top: 26px;
+                top: 29px;
                 right: 42px;
                 background-color: #F2f2f2;
                 width: 450px;
@@ -109,7 +116,7 @@
             }
 
             .notification-title strong {
-                color: #666;
+                color: #005689;
             }
 
 
@@ -118,6 +125,11 @@
                 font-color: #666;
                 margin-top: 5px;
                 margin-bottom: 5px;
+                margin-left: 70px;
+            }
+
+            .notification-type-comment .notification-snippet {
+                margin-left: 40px;
             }
 
             .notifications-clear-all {
@@ -138,19 +150,26 @@
                 margin: 0 10px 5px 0;
             }
 
+            .notification-more-updates {
+                text-decoration: underline;
+            }
+
 
         </style>
     </head>
     <body>
         <div id="toolbar">
             <div id="notifications">
-                <div id="notification-count">3</div>
+                <div id="notification-toolbar">
+                    Updates
+                    <span id="notification-count">3</span>
+                </div>
 
                 <div id="notification-items">
                     <p class="notifications-clear-all">Clear all notifications</p>
 
                     <!-- Nofitication item [START] -->
-                    <div class="notification-item" href="http://www.guardian.co.uk/sport/london-2012-olympics-blog/2012/jul/16/london-2012-olympic-11-days-to-go">
+                    <div class="notification-item notification-type-blog" href="http://www.guardian.co.uk/sport/london-2012-olympics-blog/2012/jul/16/london-2012-olympic-11-days-to-go">
 
                         <img class="notification-profile-headshot" src="blog_pic.jpg" width="60" heigh="60" />
                         <h3 class="notification-title">
@@ -160,7 +179,7 @@
 
                         <p class="notification-snippet">
                             <q class="notification-inline-quote">Members of the Australian Olympics team are the latest
-                            to be treated to a rather circuitous...</q> and 12 more updates.
+                            to be treated to a rather circuitous...</q> and <span class="notification-more-updates">12 more updates</span>.
                         </p>
 
                         <div class="notification-clear" title="Clear this update">
@@ -170,7 +189,7 @@
                     <!-- Nofitication item [END] -->
 
                     <!-- Nofitication item [START] -->
-                    <div class="notification-item" href="http://www.guardian.co.uk/commentisfree/2012/jul/15/how-fix-british-summer">
+                    <div class="notification-item notification-type-tag" href="http://www.guardian.co.uk/commentisfree/2012/jul/15/how-fix-british-summer">
                         
                         <img class="notification-profile-headshot" src="charlie_brooker.jpg" width="60" heigh="60" />
                         <h3 class="notification-title">
@@ -194,7 +213,7 @@
 
 
                      <!-- Nofitication item [START] -->
-                    <div class="notification-item" href="http://www.guardian.co.uk/commentisfree/2012/jul/08/andy-murray-not-miserable-just-normal">
+                    <div class="notification-item notification-type-comment" href="http://www.guardian.co.uk/commentisfree/2012/jul/08/andy-murray-not-miserable-just-normal">
 
                         <img class="notification-profile-headshot" src="pencil.png" width="30" heigh="30" />
                         
@@ -206,7 +225,7 @@
                     
                         <p class="notification-snippet">Your comment <q>Good article. He'll be a great Brit
                             if he wins &amp; a dour Scot if he doesn't.
-                            Oh the media...</q> has 3 replies.</p>
+                            Oh the media...</q> has <span class="notification-more-updates">3 replies</span>.</p>
 
                         <div class="notification-clear" title="Clear this update">
                             x
@@ -216,9 +235,10 @@
 
 
                     <!-- Nofitication item [START] -->
-                    <div class="notification-item" href="http://www.guardian.co.uk/politics/blog/2012/jul/16/cameron-clegg-rail-investment-politics-live">
+                    <div class="notification-item  notification-type-blog" href="http://www.guardian.co.uk/politics/blog/2012/jul/16/cameron-clegg-rail-investment-politics-live">
 
                         <img class="notification-profile-headshot" src="blog_pic_2.jpg" width="60" heigh="60" />
+
                         <h3 class="notification-title">
                             <strong>Live blog</strong><br/>
                             Cameron and Clegg announce £9bn rail investment: Politics live blog
@@ -227,7 +247,7 @@
                         <p class="notification-snippet">
                             <q class="notification-inline-quote">David Cameron has insisted that he is "even more
                                 committed to the coalition" than he was when it
-                                was crea...</q> and 10 more updates.</p>
+                                was crea...</q> and <span class="notification-more-updates">10 more updates</span>.</p>
 
                         <div class="notification-clear" title="Clear this update">
                             x

@@ -1,0 +1,87 @@
+<div id="notifications">
+    <div id="notification-toolbar">
+        Updates
+        <span id="notification-count">{{count}}</span>
+    </div>
+
+    <div id="notification-items">
+        <p class="notifications-clear-all">Clear all notifications</p>
+
+
+
+        {{#liveblogs}}
+            <!-- Nofitication item [START] -->
+            <div class="notification-item notification-type-blog" href="{{href}}">
+
+                <img class="notification-profile-headshot" src="{{thumbnail}}" width="60" heigh="60" />
+                <h3 class="notification-title">
+                    <strong>Live blog</strong><br/>
+                    {{title}}
+                </h3>
+
+                <p class="notification-snippet">
+                    <q class="notification-inline-quote">{{snippet}}</q> and <span class="notification-more-updates">{{count}} more updates</span>.
+                </p>
+
+                <div class="notification-clear" title="Clear this update">
+                    x
+                </div>
+            </div>
+            <!-- Nofitication item [END] -->
+        {{/liveblogs}}
+
+
+
+        {{#comments}}
+            <!-- Nofitication item [START] -->
+            <div class="notification-item notification-type-comment" href="{{href}}">
+
+                <img class="notification-profile-headshot" src="pencil.png" width="30" heigh="30" />
+                
+                <h3 class="notification-title">
+                    <strong>Comments</strong><br />
+                    Andy Murray: not miserable, just normal
+                </h3>
+
+            
+                <p class="notification-snippet">Your comment <q>Good article. He'll be a great Brit
+                    if he wins &amp; a dour Scot if he doesn't.
+                    Oh the media...</q> has <span class="notification-more-updates">3 replies</span>.</p>
+
+                <div class="notification-clear" title="Clear this update">
+                    x
+                </div>
+            </div>
+            <!-- Nofitication item [END] -->
+        {{/comments}}
+
+
+
+
+        {{#tags}}
+            <!-- Nofitication item [START] -->
+            <div class="notification-item notification-type-tag" href="{{href}}">
+                
+                <img class="notification-profile-headshot" src="{{thumbnail}}" width="60" heigh="60" />
+                <h3 class="notification-title">
+                    <strong>{{author}}</strong><br/>
+                    {{headline}}
+                </h3>
+
+                
+
+                <p class="notification-snippet">
+                    <q class="notification-inline-quote">{{snippet}}</q>
+                </p>
+
+                <div class="notification-clear" title="Clear this update">
+                    x
+                </div>
+            </div>
+            <!-- Nofitication item [END] -->
+        {{/tags}}
+
+
+
+    </div>
+</div>
