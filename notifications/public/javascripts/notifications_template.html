@@ -1,3 +1,5 @@
+
+
 <div id="notification-template">
 <div id="notifications" class="{{mobile}}">
     <div id="notification-toolbar">
@@ -12,7 +14,7 @@
 
         {{#liveblogs}}
             <!-- Nofitication item [START] -->
-            <div class="notification-item notification-type-blog" href="{{href}}">
+            <div class="notification-item notification-type-blog" href="http://gnm41146.int.gnl/www.guardian.co.uk/{{href}}">
 
                 <img class="notification-profile-headshot" src="{{thumbnail}}" width="60" heigh="60" />
                 <h3 class="notification-title">
@@ -35,19 +37,34 @@
 
         {{#comments}}
             <!-- Nofitication item [START] -->
-            <div class="notification-item notification-type-comment" href="{{href}}">
+            <div class="notification-item notification-type-comment" href="http://gnm41146.int.gnl/www.guardian.co.uk/{{href}}#discussion-comments" data-username="{{userName}}">
 
-                <img class="notification-profile-headshot" src="pencil.png" width="30" heigh="30" />
-                
+                <img class="notification-profile-headshot" src="http://gnm41146.int.gnl/static.guim.co.uk/static/DEV/common/images/pencil.png" width="40" heigh="40" />
+
                 <h3 class="notification-title">
                     <strong>Comments</strong><br />
-                    Andy Murray: not miserable, just normal
+                    {{discussionTitle}}
                 </h3>
 
-            
-                <p class="notification-snippet">Your comment <q>Good article. He'll be a great Brit
-                    if he wins &amp; a dour Scot if he doesn't.
-                    Oh the media...</q> has <span class="notification-more-updates">3 replies</span>.</p>
+                {{#responseCount}}
+                    <p>Your comment has {{responseCount}} replies.</p>
+                {{/responseCount}}
+
+                {{#recommendCount}}
+                    <p>{{recommendCount}} readers have recommended your comment.</p>
+                {{/recommendCount}}
+                
+                {{#highlighted}}
+                    <p>Your comment is a Guardian pick!</p>
+                {{/highlighted}}
+
+                
+                {{#commentBody}}
+                    <p class="notification-snippet">
+                       <q class="notification-inline-quote">{{commentBody}}</q>
+                    </p>
+                {{/commentBody}}
+                
 
                 <div class="notification-clear" title="Clear this update">
                     x
