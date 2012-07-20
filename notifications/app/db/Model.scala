@@ -84,6 +84,9 @@ case class Blog(@Key("_id") id: String, var lastViewedId: String, var title: Str
 case class Tag(@Key("_id") id: String, var timeLastViewed: String, @Ignore var byLineImageUrl:String ="", @Ignore var contributor:String="", @Ignore var count: Int = 0, @Ignore var content: List[Content] = List())
 case class Content(path:String ="", webTitle: String = "", webUrl:String = "", headline:String="", standfirst:String="", thumbnail:String="")
 case class Comment(@Key("_id") id: String,
+                   userName: String,
+                   commentBody: String,
+                   commentUrlOnProfilePage: String,
                    discussionTitle: String,
                    discussionUrl: String,
                    var responseCount: Int,

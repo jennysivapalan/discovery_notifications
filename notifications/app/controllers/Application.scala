@@ -286,6 +286,7 @@ object Application extends Controller with DefaultWrites {
     val commentJson = (Json.parse(body)\"comments")
     var changed = false
 
+    val userName = Json.parse(body)\("userProfile")\("displayName").toString.replace("\"","")
     if(commentJson.isInstanceOf[JsArray]){
       commentJson.asInstanceOf[JsArray].value.foreach(c=>{
         val commentId = c.\("id").toString
@@ -294,6 +295,8 @@ object Application extends Controller with DefaultWrites {
         val isHighlighted = c.\("isHighlighted").toString.toBoolean
         val discussionUrl = c.\("discussion").\("url").toString.replace("\"","")
         val discussionTitle = c.\("discussion").\("title").toString.replace("\"","")
+        val commentBody = c.\("body").toString.replace("\"","")
+        val commentUrlOnProfilePage = "http://www.gucode.co.uk/discussion/user-comments/id/"+user.id+"#comment-"+commentId
 
         user.subscribedComments.find(_.id==commentId) match {
           case Some(commentInDB) => {
@@ -314,7 +317,7 @@ object Application extends Controller with DefaultWrites {
 
           }
           case None => {
-            val newComment = Comment(commentId, discussionTitle, discussionUrl, numResponses, numRecommends,
+            val newComment = Comment(commentId, userName.toString.replace("\"",""), commentBody, commentUrlOnProfilePage, discussionTitle, discussionUrl, numResponses, numRecommends,
               isHighlighted, numResponses!=0, numRecommends!=0, isHighlighted)
             user.subscribedComments = user.subscribedComments :+ newComment
             changed = true
